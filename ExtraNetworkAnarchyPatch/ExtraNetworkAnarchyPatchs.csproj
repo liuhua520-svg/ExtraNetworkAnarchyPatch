@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net35</TargetFramework>
+		<Version>1.0.0</Version>
+		<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<Deterministic>false</Deterministic>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="RoadAI.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CitiesHarmony.API" Version="2.1.0" />
+		<Reference Include="Assembly-CSharp">
+			<HintPath>G:\SteamLibrary\steamapps\common\Cities_Skylines\Cities_Data\Managed\Assembly-CSharp.dll</HintPath>
+		</Reference>
+		<Reference Include="ColossalManaged">
+			<HintPath>G:\SteamLibrary\steamapps\common\Cities_Skylines\Cities_Data\Managed\ColossalManaged.dll</HintPath>
+		</Reference>
+		<Reference Include="ICities">
+			<HintPath>G:\SteamLibrary\steamapps\common\Cities_Skylines\Cities_Data\Managed\ICities.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine">
+			<HintPath>G:\SteamLibrary\steamapps\common\Cities_Skylines\Cities_Data\Managed\UnityEngine.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.UI">
+			<HintPath>G:\SteamLibrary\steamapps\common\Cities_Skylines\Cities_Data\Managed\UnityEngine.UI.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+	<!-- ==================== 自动部署到 Mod 文件夹（包含 CitiesHarmony.API） ==================== -->
+	<Target Name="DeployToModDirectory" AfterTargets="Build">
+		<PropertyGroup>
+			<ModName>ExtraNetworkAnarchyPatchs</ModName>
+			<!-- ← 改成你的 Mod 文件夹名 -->
+			<DeployDir>$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ModName)\</DeployDir>
+		</PropertyGroup>
+
+		<Message Importance="high" Text="=== 部署 Patch Mod 到: $(DeployDir) ===" />
+
+		<MakeDir Directories="$(DeployDir)" />
+
+		<!-- 删除旧文件 -->
+		<Delete Files="$(DeployDir)$(TargetFileName)" />
+		<Delete Files="$(DeployDir)CitiesHarmony.API.dll" />
+
+		<!-- 复制自己的 DLL -->
+		<Copy SourceFiles="$(TargetPath)"
+		      DestinationFiles="$(DeployDir)$(TargetFileName)" />
+
+		<!-- 复制 CitiesHarmony.API.dll（从 NuGet 包输出目录复制） -->
+		<Copy SourceFiles="$(NuGetPackageRoot)citiesharmony.api\2.1.0\lib\net35\CitiesHarmony.API.dll"
+		      DestinationFiles="$(DeployDir)CitiesHarmony.API.dll" />
+	</Target>
+</Project>
